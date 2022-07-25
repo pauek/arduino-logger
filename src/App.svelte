@@ -1,10 +1,7 @@
 <script lang="ts">
-import Table from "./lib/Table.svelte";
+  import Table from "./lib/Table.svelte";
+  import type { Sample } from './lib/types';
 
-  interface Sample {
-    timestamp: Date;
-    values: number[];
-  }
 
   let port: SerialPort = null;
   let samples: Sample[] = null;
@@ -36,9 +33,9 @@ import Table from "./lib/Table.svelte";
             const line = str.slice(0, pos);
             str = str.slice(pos + 2);
             const newSample = {
-                  timestamp: new Date(),
-                  values: line.split(",").map(Number),
-                };
+              timestamp: new Date(),
+              values: line.split(",").map(Number),
+            };
             if (Array.isArray(samples)) {
               samples = [...samples, newSample];
             } else if (samples === null) {
@@ -68,6 +65,5 @@ import Table from "./lib/Table.svelte";
   <div>
     {(port && "Connected") || ""}
   </div>
-  <Table samples={samples} />
+  <Table {samples} />
 </main>
-
