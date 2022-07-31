@@ -1,69 +1,58 @@
 <script lang="ts">
+  import { onDestroy } from "svelte";
+  import ErrorMessage from "./lib/ErrorMessage.svelte";
+
+  import { Connection, connectToSerialPort } from "./lib/serial";
   import Table from "./lib/Table.svelte";
-  import type { Sample } from './lib/types';
+  import type { Sample } from "./lib/types";
 
-
-  let port: SerialPort = null;
-  let samples: Sample[] = null;
-
-  const getPort = async () => {
-    try {
-      const port = await navigator.serial.requestPort();
-      await port.open({ baudRate: 9600 });
-      return port;
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-  };
-
-  const readData = async (port: SerialPort) => {
-    while (port.readable) {
-      const reader = port.readable.getReader();
-      try {
-        let str = "";
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) {
-            break;
-          }
-          str += new TextDecoder().decode(value);
-          const pos = str.indexOf("\n");
-          if (pos !== -1) {
-            const line = str.slice(0, pos);
-            str = str.slice(pos + 2);
-            const newSample = {
-              timestamp: new Date(),
-              values: line.split(",").map(Number),
-            };
-            if (Array.isArray(samples)) {
-              samples = [...samples, newSample];
-            } else if (samples === null) {
-              // Discard first line of data
-              samples = [];
-            }
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        reader.releaseLock();
-      }
-    }
-  };
+  let errorMessage: String = null;
+  let connection: Connection = null;
+  let samples: Sample[] = [];
 
   const connect = async () => {
-    if (port === null) {
-      port = await getPort();
+    try {
+      connection ??= await connectToSerialPort();
+      for await (let newSample of connection.readData()) {
+        console.log("New sample:", newSample);
+        samples = [...samples, newSample];
+      }
+    } catch (err) {
+      errorMessage = `Cannot connect to serial port: ${err.toString()}`;
     }
-    readData(port);
   };
+
+  const dismiss = () => {
+    errorMessage = null;
+  }
+
+  const disconnect = async () => {
+    connection.close();
+    connection = null;
+  };
+
+  onDestroy(() => connection.close());
 </script>
 
+<ErrorMessage text={errorMessage} onDismiss={dismiss} />
 <main>
-  <button on:click={connect}>Connect to Arduino</button>
-  <div>
-    {(port && "Connected") || ""}
-  </div>
+  {#if connection === null}
+    <button on:click={connect}>Connect to Arduino</button>
+  {:else}
+    <button on:click={disconnect}>Disconnect</button>
+  {/if}
+
+  <div class="space" />
+
   <Table {samples} />
 </main>
+
+<style>
+  main {
+    padding: 1rem;
+    padding-top: 3.6rem;
+  }
+  .space {
+    height: 2rem;
+  }
+</style>

@@ -1,6 +1,5 @@
+export interface Sample {
+  timestamp: Date;
+  values: number[];
+}
 
-  export interface Sample {
-    timestamp: Date;
-    values: number[];
-  }
-  
