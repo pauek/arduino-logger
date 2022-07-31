@@ -6,7 +6,7 @@
 </script>
 
 <div class="table-container">
-  <table class="data" class:connected="{connected}">
+  <table class="data" class:connected>
     {#if samples !== null && samples.length > 0}
       <thead>
         <th>Time</th>
@@ -50,11 +50,10 @@
     background-color: rgb(158, 255, 156);
   }
 
-
   table tr:first-child {
     border: 2px solid black;
   }
-  
+
   table td.timestamp {
     text-align: left;
     font-style: italic;
