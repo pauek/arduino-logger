@@ -1,9 +1,12 @@
 <script lang="ts">
-  export let samples;
+  import type { Sample } from "./types";
+
+  export let samples: Sample[];
+  export let connected: boolean;
 </script>
 
 <div class="table-container">
-  <table class="data">
+  <table class="data" class:connected="{connected}">
     {#if samples !== null && samples.length > 0}
       <thead>
         <th>Time</th>
@@ -12,7 +15,7 @@
         {/each}
       </thead>
       <tbody>
-        {#each samples.slice(-20) as sample}
+        {#each samples.slice(-50).reverse() as sample}
           <tr>
             <td class="timestamp">
               {sample.timestamp.toLocaleTimeString("es-ES")}
@@ -39,6 +42,19 @@
   table td {
     text-align: right;
   }
+  table tr:first-child td {
+    background-color: rgb(255, 224, 156);
+    font-weight: bold;
+  }
+  table.connected tr:first-child td {
+    background-color: rgb(158, 255, 156);
+  }
+
+
+  table tr:first-child {
+    border: 2px solid black;
+  }
+  
   table td.timestamp {
     text-align: left;
     font-style: italic;

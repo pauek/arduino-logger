@@ -44,13 +44,13 @@
 
   <div class="space" />
 
-  <Table {samples} />
+  <Table {samples} connected={connection != null}/>
 </main>
 
 <style>
   main {
     padding: 1rem;
-    padding-top: 3.6rem;
+    padding-top: 1rem;
   }
   .space {
     height: 2rem;
