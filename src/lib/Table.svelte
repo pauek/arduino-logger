@@ -7,7 +7,10 @@
 <div class="table-container">
   <table
     class="data"
-    class:connected={$connectionState === ConnectionState.connected}
+    class:active={$connectionState === ConnectionState.started}
+    class:paused={$connectionState === ConnectionState.paused}
+    class:pausing={$connectionState === ConnectionState.pausing}
+    class:disconnected={$connectionState === ConnectionState.disconnected}
   >
     {#if $samples !== null && $samples.length > 0}
       <thead>
@@ -45,11 +48,19 @@
     text-align: right;
   }
   table tr:first-child td {
-    background-color: rgb(255, 224, 156);
     font-weight: bold;
   }
-  table.connected tr:first-child td {
+  table.active tr:first-child td {
     background-color: rgb(158, 255, 156);
+  }
+  table.paused tr:first-child td {
+    background-color: rgb(255, 224, 156);
+  }
+  table.pausing tr:first-child td {
+    background-color: rgb(255, 224, 156);
+  }
+  table.disconnected tr:first-child td {
+    background-color: lightgray;
   }
 
   table tr:first-child {

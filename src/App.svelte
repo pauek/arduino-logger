@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
   import ErrorMessage from "./lib/ErrorMessage.svelte";
-
   /*
   Connection:
   - Crear una conexión (esto debería estar todo el rato): connectToSerialPort
@@ -28,14 +27,13 @@
 
   */
 
-  import serial, { samples, connectionState, ConnectionState } from "./lib/serial";
+  import serial, { connectionState, ConnectionState } from "./lib/serial";
   import Table from "./lib/Table.svelte";
-  import type { Sample } from "./lib/types";
 
   let errorMessage: String = null;
 
   const connect = async () => {
-    await serial.connectToSerialPort();
+    await serial.connect();
     serial.goReadData();
   };
 
@@ -44,18 +42,34 @@
   };
 
   const disconnect = async () => {
-    await serial.closeConnection();
+    await serial.close();
   };
 
-  onDestroy(() => serial.closeConnection());
+  onDestroy(() => serial.close());
 </script>
 
 <ErrorMessage text={errorMessage} onDismiss={dismiss} />
 <main>
   {#if $connectionState === ConnectionState.disconnected}
     <button on:click={connect}>Connect to Arduino</button>
-  {:else}
+  {:else if $connectionState === ConnectionState.started || $connectionState === ConnectionState.paused}
     <button on:click={disconnect}>Disconnect</button>
+  {:else if $connectionState === ConnectionState.connecting}
+    <button on:click={disconnect} disabled={true}>Connecting...</button>
+  {:else if $connectionState === ConnectionState.disconnecting}
+    <button on:click={disconnect} disabled={true}>Disconnecting...</button>
+  {:else if $connectionState === ConnectionState.pausing || $connectionState === ConnectionState.starting}
+    <button on:click={disconnect} disabled={true}>Disconnect</button>
+  {/if}
+
+  {#if $connectionState === ConnectionState.paused}
+    <button on:click={serial.start}>Start</button>
+  {:else if $connectionState === ConnectionState.started}
+    <button on:click={serial.pause}>Pause</button>
+  {:else if $connectionState === ConnectionState.pausing}
+    <button on:click={disconnect} disabled={true}>Pausing...</button>
+  {:else if $connectionState === ConnectionState.starting}
+    <button on:click={disconnect} disabled={true}>Starting...</button>
   {/if}
 
   <div class="space" />
