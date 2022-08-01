@@ -1,16 +1,5 @@
-import { derived, writable } from "svelte/store";
-import type { Sample } from "./types";
-
-export enum ConnectionState {
-  disconnected,
-  connecting,
-  connected,
-  paused,
-  starting,
-  started,
-  pausing,
-  disconnecting,
-}
+import { writable } from "svelte/store";
+import { ConnectionState, type Sample } from "./types";
 
 let _state = ConnectionState.disconnected;
 export const connectionState = writable<ConnectionState>(_state);

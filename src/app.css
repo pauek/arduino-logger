@@ -1,18 +1,12 @@
 body {
   margin: 0;
+  height: 100vh;
+  display: flex;
 }
-
 :root {
   font-family: sans-serif;
 }
-
-button {
-  color: white;
-  background-color: rgb(50, 112, 255);
-  padding: .4rem .6rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-button[disabled] {
-  background-color: lightgray;
+#app {
+  flex: 1;
+  display: flex;
 }

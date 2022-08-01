@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { ConnectionState, connectionState, samples } from "./serial";
-  import type { Sample } from "./types";
-
+  import { connectionState, samples } from "./serial";
+  import { ConnectionState } from "./types";
 </script>
 
 <div class="table-container">
