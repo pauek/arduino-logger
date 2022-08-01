@@ -19,7 +19,8 @@
     align-items: stretch;
   }
   .wrapper {
-    padding: 1.5rem;
+    flex: 1;
     overflow-y: scroll;
+    background-color: #f5f5f5;
   }
 </style>

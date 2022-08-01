@@ -1,27 +1,15 @@
 <script lang="ts">
   import Button from "./Button.svelte";
-  import serial,{ connectionState } from "./serial";
-  import { ConnectionState } from "./types";
 </script>
 
 <div class="data-header">
-  <h3>Title</h3>
+  <h1>Title</h1>
   <div class="buttons">
-    {#if $connectionState === ConnectionState.paused}
-      <Button on:click={serial.start} title="Start" />
-    {:else if $connectionState === ConnectionState.started}
-      <Button on:click={serial.pause} title="Pause" />
-    {:else if $connectionState === ConnectionState.pausing}
-      <Button on:click={serial.close} disabled={true} title="Pausing..." />
-    {:else if $connectionState === ConnectionState.starting}
-      <Button on:click={serial.close} disabled={true} title="Starting..." />
-    {/if}
-    <div class="space"></div>
-    <Button title="Save to File" />
-    <div class="space"></div>
-    <Button title="Clear" />
-    <div class="flex-space"></div>
-    <Button title="Delete" />
+    <Button title="Save to File" disabled />
+    <div class="space" />
+    <Button title="Clear" disabled />
+    <div class="flex-space" />
+    <Button title="Delete" disabled />
   </div>
 </div>
 
@@ -30,11 +18,11 @@
     display: flex;
     flex-direction: column;
     padding: 0.8rem;
+    padding-left: 0;
     border-bottom: 1px solid black;
   }
-  h3 {
-    margin: 0;
-    margin-bottom: 0.5rem;
+  h1 {
+    margin: 0.2rem 0 0.5rem;
   }
   .buttons {
     display: flex;
@@ -43,7 +31,7 @@
     align-items: center;
   }
   .space {
-    width: .4rem;
+    width: 0.4rem;
   }
   .flex-space {
     flex: 1;

@@ -12,8 +12,10 @@
     padding: 0.4rem 0.6rem;
     border-radius: 5rem;
     border-width: 0px;
-    padding-left: 0.8rem;
-    padding-right: 0.8rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: 105%;
+    font-weight: bold;
   }
   button[disabled] {
     background-color: lightgray;

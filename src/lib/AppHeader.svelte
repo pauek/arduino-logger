@@ -19,13 +19,13 @@
   <div class="button">
     {#if $connectionState === ConnectionState.disconnected}
       <Button on:click={connect} title="Connect to Arduino" />
-    {:else if $connectionState === ConnectionState.started || $connectionState === ConnectionState.paused}
+    {:else if $connectionState === ConnectionState.active}
       <Button on:click={disconnect} title="Disconnect" />
     {:else if $connectionState === ConnectionState.connecting}
       <Button on:click={disconnect} disabled={true} title="Connecting..." />
     {:else if $connectionState === ConnectionState.disconnecting}
       <Button on:click={disconnect} disabled={true} title="Disconnecting..." />
-    {:else if $connectionState === ConnectionState.pausing || $connectionState === ConnectionState.starting}
+    {:else if $connectionState === ConnectionState.starting}
       <Button on:click={disconnect} disabled={true} title="Disconnect" />
     {/if}
   </div>
@@ -41,7 +41,7 @@
     height: 3rem;
     background-color: lightgray;
   }
-  header.started {
+  header.active {
     background-color: rgb(28, 197, 28);
   }
   header.paused {

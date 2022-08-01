@@ -19,42 +19,25 @@ export const samples = writable<Array<Sample>>([]);
 
 const connect = async () => {
   setState(ConnectionState.connecting);
-  port = await navigator.serial.requestPort();
-  await port.open({ baudRate: 9600 });
+  if (port === null) {
+    port = await navigator.serial.requestPort();
+  }
+  if (!port.readable) {
+    await port.open({ baudRate: 9600 });
+  }
   reader = port.readable.getReader();
   setState(ConnectionState.connected);
 };
 
-const start = async () => {
-  if (stateIs(ConnectionState.paused)) {
-    setState(ConnectionState.starting);
-    await port.open({ baudRate: 9600 });
-    reader = port.readable.getReader();
-    goReadData();
-  }
-};
-
-const pause = async () => {
-  if (stateIs(ConnectionState.started)) {
-    setState(ConnectionState.pausing);
-    await stream.return(null);
-    reader?.releaseLock();
-    reader = null;
-    await port.close();
-    setState(ConnectionState.paused);
-  }
-};
-
 const close = async () => {
-  if (stateIs(ConnectionState.started) || stateIs(ConnectionState.paused)) {
+  if (stateIs(ConnectionState.active)) {
     setState(ConnectionState.disconnecting);
     await stream.return(null);
     stream = null;
     reader?.releaseLock();
     reader = null;
-    if (stateIs(ConnectionState.started)) {
+    if (stateIs(ConnectionState.active)) {
       await port.close();
-      port = null;
     }
     setState(ConnectionState.disconnected);
   }
@@ -63,7 +46,7 @@ const close = async () => {
 const goReadData = async () => {
   try {
     stream = readDataStream();
-    setState(ConnectionState.started);
+    setState(ConnectionState.active);
     for await (let newSample of stream) {
       samples.update(($samples) => [...$samples, newSample]);
     }
@@ -109,6 +92,4 @@ export default {
   connect,
   goReadData,
   close,
-  pause,
-  start,
 };

@@ -7,9 +7,7 @@ export enum ConnectionState {
   disconnected,
   connecting,
   connected,
-  paused,
   starting,
-  started,
-  pausing,
+  active,
   disconnecting,
 }

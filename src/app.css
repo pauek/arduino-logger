@@ -1,12 +1,10 @@
 body {
   margin: 0;
   height: 100vh;
-  display: flex;
 }
 :root {
   font-family: sans-serif;
 }
 #app {
-  flex: 1;
-  display: flex;
+  height: 100vh;
 }

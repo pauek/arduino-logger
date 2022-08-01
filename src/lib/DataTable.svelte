@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { action_destroyer } from "svelte/internal";
   import { connectionState, samples } from "./serial";
   import { ConnectionState } from "./types";
 </script>
@@ -6,9 +7,7 @@
 <div class="table-container">
   <table
     class="data"
-    class:active={$connectionState === ConnectionState.started}
-    class:paused={$connectionState === ConnectionState.paused}
-    class:pausing={$connectionState === ConnectionState.pausing}
+    class:active={$connectionState === ConnectionState.active}
     class:disconnected={$connectionState === ConnectionState.disconnected}
   >
     {#if $samples !== null && $samples.length > 0}
@@ -30,6 +29,8 @@
           </tr>
         {/each}
       </tbody>
+    {:else if $connectionState === ConnectionState.active}
+      <p>Waiting for data...</p>
     {/if}
   </table>
 </div>
@@ -37,6 +38,7 @@
 <style>
   table {
     border-collapse: collapse;
+    background-color: white;
   }
   table td,
   table th {
@@ -63,7 +65,7 @@
   }
 
   table tr:first-child {
-    border: 2px solid black;
+    outline: 1px solid black;
   }
 
   table td.timestamp {
