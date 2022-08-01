@@ -2,62 +2,52 @@ import { derived, writable } from "svelte/store";
 import type { Sample } from "./types";
 
 export enum ConnectionState {
+  disconnected,
   connecting,
   connected,
-  disconnecting,
-  disconnected,
   active,
   paused,
+  disconnecting,
 }
 
-const state = writable<ConnectionState>(
-  ConnectionState.disconnected
-);
-export const connectionState = derived(state, x => x);
-class Connection {
-  port: SerialPort;
-  reader: ReadableStreamDefaultReader<Uint8Array>;
-  stream: AsyncGenerator<Sample>;
+let _state = ConnectionState.disconnected;
+export const connectionState = writable<ConnectionState>(_state);
 
-  constructor() {
-    this.port = null;
-    this.reader = null;
-    this.stream = null;
-  }
-
-  async setup() {
-    this.port = await navigator.serial.requestPort();
-    await this.port.open({ baudRate: 9600 });
-    this.reader = this.port.readable.getReader();
-  }
-
-  async close() {
-    await this.stream.return(null);
-    this.reader?.releaseLock();
-    await this.port.close();
-  }
-
-  readData(): AsyncGenerator<Sample> {
-    this.stream = readDataStream(this);
-    return this.stream;
-  }
+const setState = (s: ConnectionState) => {
+  _state = s;
+  connectionState.set(_state);
 }
+const stateIs = (s: ConnectionState) => _state === s;
+
+let port: SerialPort = null;
+let reader: ReadableStreamDefaultReader<Uint8Array> = null;
+let stream: AsyncGenerator<Sample> = null;
+
+const setup = async () => {
+  port = await navigator.serial.requestPort();
+  await port.open({ baudRate: 9600 });
+  reader = port.readable.getReader();
+};
+
+const close = async () => {
+  if (stateIs(ConnectionState.active)) {
+    await stream.return(null);
+    reader?.releaseLock();
+    await port.close();
+  }
+};
 
 export const samples = writable<Array<Sample>>([]);
 
-let connection;
-
-const connectToSerialPort = async (): Promise<Connection> => {
-  state.set(ConnectionState.connecting);
-  connection = new Connection();
-  await connection.setup();
-  state.set(ConnectionState.connected);
-  return connection;
+const connectToSerialPort = async () => {
+  setState(ConnectionState.connecting);
+  await setup();
+  setState(ConnectionState.connected);
 };
 
 const goReadData = async () => {
   try {
-    for await (let newSample of connection.readData()) {
+    for await (let newSample of readDataStream()) {
       samples.update(($samples) => [...$samples, newSample]);
     }
   } catch (err) {
@@ -66,20 +56,18 @@ const goReadData = async () => {
 };
 
 const closeConnection = async () => {
-  state.set(ConnectionState.disconnecting)
-  await connection.close();
-  state.set(ConnectionState.disconnected);
+  setState(ConnectionState.disconnecting);
+  await close();
+  setState(ConnectionState.disconnected);
 };
 
-const readDataStream = async function* (
-  connection: Connection
-): AsyncGenerator<Sample> {
+const readDataStream = async function* (): AsyncGenerator<Sample> {
   try {
     let firstSample = true;
     let str = "";
     let textDecoder = new TextDecoder();
     for (;;) {
-      const { value, done } = await connection.reader.read();
+      const { value, done } = await reader.read();
       if (done) {
         break;
       }
@@ -102,7 +90,7 @@ const readDataStream = async function* (
   } catch (error) {
     console.error(error);
   } finally {
-    connection.reader.releaseLock();
+    reader.releaseLock();
   }
 };
 
