@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { action_destroyer } from "svelte/internal";
-  import { connectionState, samples } from "./serial";
+  import { samples } from "./db";
+  import { connectionState } from "./serial";
   import { ConnectionState } from "./types";
 </script>
 

@@ -1,15 +1,22 @@
 <script lang="ts">
   import Button from "./Button.svelte";
+  import db, { samples, selectedFile } from "./db";
 </script>
 
 <div class="data-header">
-  <h1>Title</h1>
+  <h1>
+    {#if $selectedFile === ""}
+      Scratch
+    {:else}
+      {$selectedFile}
+    {/if}
+  </h1>
   <div class="buttons">
     <Button title="Save to File" disabled />
     <div class="space" />
-    <Button title="Clear" disabled />
+    <Button title="Clear" on:click={db.clearFile} disabled="{$samples.length === 0}" />
     <div class="flex-space" />
-    <Button title="Delete" disabled />
+    <Button title="Delete" on:click={db.deleteFile} />
   </div>
 </div>
 
@@ -19,7 +26,6 @@
     flex-direction: column;
     padding: 0.8rem;
     padding-left: 0;
-    border-bottom: 1px solid black;
   }
   h1 {
     margin: 0.2rem 0 0.5rem;

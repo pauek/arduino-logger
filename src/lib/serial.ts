@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
 import { ConnectionState, type Sample } from "./types";
+import db from './db';
 
 let _state = ConnectionState.disconnected;
 export const connectionState = writable<ConnectionState>(_state);
@@ -14,8 +15,6 @@ const stateIs = (s: ConnectionState) => _state === s;
 let port: SerialPort = null;
 let reader: ReadableStreamDefaultReader<Uint8Array> = null;
 let stream: AsyncGenerator<Sample> = null;
-
-export const samples = writable<Array<Sample>>([]);
 
 const connect = async () => {
   setState(ConnectionState.connecting);
@@ -48,7 +47,7 @@ const goReadData = async () => {
     stream = readDataStream();
     setState(ConnectionState.active);
     for await (let newSample of stream) {
-      samples.update(($samples) => [...$samples, newSample]);
+      db.addSample(newSample);
     }
   } catch (err) {
     console.error(err);
