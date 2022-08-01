@@ -3,7 +3,7 @@
   import db, { samples, selectedFile } from "./db";
 </script>
 
-<div class="data-header">
+<div class="header">
   <h1>
     {#if $selectedFile === ""}
       Scratch
@@ -21,11 +21,12 @@
 </div>
 
 <style>
-  .data-header {
+  .header {
     display: flex;
     flex-direction: column;
     padding: 0.8rem;
     padding-left: 0;
+    padding-bottom: 1.2rem;
   }
   h1 {
     margin: 0.2rem 0 0.5rem;
