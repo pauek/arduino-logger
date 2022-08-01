@@ -1,6 +1,20 @@
+import { derived, writable } from "svelte/store";
 import type { Sample } from "./types";
 
-export class Connection {
+export enum ConnectionState {
+  connecting,
+  connected,
+  disconnecting,
+  disconnected,
+  active,
+  paused,
+}
+
+const state = writable<ConnectionState>(
+  ConnectionState.disconnected
+);
+export const connectionState = derived(state, x => x);
+class Connection {
   port: SerialPort;
   reader: ReadableStreamDefaultReader<Uint8Array>;
   stream: AsyncGenerator<Sample>;
@@ -29,13 +43,35 @@ export class Connection {
   }
 }
 
-export const connectToSerialPort = async (): Promise<Connection> => {
-  const connection = new Connection();
+export const samples = writable<Array<Sample>>([]);
+
+let connection;
+
+const connectToSerialPort = async (): Promise<Connection> => {
+  state.set(ConnectionState.connecting);
+  connection = new Connection();
   await connection.setup();
+  state.set(ConnectionState.connected);
   return connection;
 };
 
-export const readDataStream = async function* (
+const goReadData = async () => {
+  try {
+    for await (let newSample of connection.readData()) {
+      samples.update(($samples) => [...$samples, newSample]);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const closeConnection = async () => {
+  state.set(ConnectionState.disconnecting)
+  await connection.close();
+  state.set(ConnectionState.disconnected);
+};
+
+const readDataStream = async function* (
   connection: Connection
 ): AsyncGenerator<Sample> {
   try {
@@ -68,4 +104,10 @@ export const readDataStream = async function* (
   } finally {
     connection.reader.releaseLock();
   }
+};
+
+export default {
+  connectToSerialPort,
+  goReadData,
+  closeConnection,
 };

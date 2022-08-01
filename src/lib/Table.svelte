@@ -1,26 +1,28 @@
 <script lang="ts">
+  import { ConnectionState, connectionState, samples } from "./serial";
   import type { Sample } from "./types";
 
-  export let samples: Sample[];
-  export let connected: boolean;
 </script>
 
 <div class="table-container">
-  <table class="data" class:connected>
-    {#if samples !== null && samples.length > 0}
+  <table
+    class="data"
+    class:connected={$connectionState === ConnectionState.connected}
+  >
+    {#if $samples !== null && $samples.length > 0}
       <thead>
         <th>Time</th>
-        {#each samples[0].values as _, i}
+        {#each $samples[0].values as _, i}
           <th>Col {i}</th>
         {/each}
       </thead>
       <tbody>
-        {#each samples.slice(-50).reverse() as sample}
+        {#each $samples.slice(-50).reverse() as s}
           <tr>
             <td class="timestamp">
-              {sample.timestamp.toLocaleTimeString("es-ES")}
+              {s.timestamp.toLocaleTimeString("es-ES")}
             </td>
-            {#each sample.values as value}
+            {#each s.values as value}
               <td>{value}</td>
             {/each}
           </tr>

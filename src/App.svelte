@@ -28,41 +28,31 @@
 
   */
 
-  import { Connection, connectToSerialPort } from "./lib/serial";
+  import serial, { samples, connectionState, ConnectionState } from "./lib/serial";
   import Table from "./lib/Table.svelte";
   import type { Sample } from "./lib/types";
 
   let errorMessage: String = null;
-  let connection: Connection = null;
-  let samples: Sample[] = [];
 
   const connect = async () => {
-    try {
-      connection ??= await connectToSerialPort();
-      for await (let newSample of connection.readData()) {
-        console.log("New sample:", newSample);
-        samples = [...samples, newSample];
-      }
-    } catch (err) {
-      errorMessage = `Cannot connect to serial port: ${err.toString()}`;
-    }
+    await serial.connectToSerialPort();
+    serial.goReadData();
   };
 
   const dismiss = () => {
     errorMessage = null;
-  }
-
-  const disconnect = async () => {
-    connection.close();
-    connection = null;
   };
 
-  onDestroy(() => connection.close());
+  const disconnect = async () => {
+    await serial.closeConnection();
+  };
+
+  onDestroy(() => serial.closeConnection());
 </script>
 
 <ErrorMessage text={errorMessage} onDismiss={dismiss} />
 <main>
-  {#if connection === null}
+  {#if $connectionState === ConnectionState.disconnected}
     <button on:click={connect}>Connect to Arduino</button>
   {:else}
     <button on:click={disconnect}>Disconnect</button>
@@ -70,7 +60,7 @@
 
   <div class="space" />
 
-  <Table {samples} connected={connection != null}/>
+  <Table />
 </main>
 
 <style>
