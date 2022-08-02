@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 import type { Sample } from "./types";
 
-export const samples = writable<Array<Sample>>([]);
+export const samples = writable<Sample[]>([]);
 
 const initialFile = "";
 const inMemorySamples: Map<string, Sample[]> = new Map();
@@ -51,6 +51,10 @@ const renameFile = (oldName: string, newName: string) => {
 };
 
 const deleteFile = () => {
+  if (selected === "") {
+    // Ignore "scratch" file
+    return;
+  }
   if (inMemorySamples.has(selected)) {
     inMemorySamples.delete(selected);
     fileList.update(($fileList) => $fileList.filter((f) => f !== selected));

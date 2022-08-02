@@ -14,9 +14,15 @@
   <div class="buttons">
     <Button title="Save to File" disabled />
     <div class="space" />
-    <Button title="Clear" on:click={db.clearFile} disabled="{$samples.length === 0}" />
+    <Button
+      title="Clear"
+      on:click={db.clearFile}
+      disabled={$samples.length === 0}
+    />
     <div class="flex-space" />
-    <Button title="Delete" on:click={db.deleteFile} />
+    {#if $selectedFile !== ""}
+      <Button title="Delete" on:click={db.deleteFile} />
+    {/if}
   </div>
 </div>
 
