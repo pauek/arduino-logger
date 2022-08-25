@@ -18,7 +18,7 @@
     {/if}
   </h1>
   <div class="buttons">
-    {#if !isScratch && !isActive && hasData}
+    {#if !isActive && hasData}
       <Button title="Save to File" disabled={!hasData} />
     {/if}
     <div class="flex-space" />
@@ -37,15 +37,14 @@
 <style>
   .header {
     display: flex;
-    flex-direction: column;
-    padding: 0.8rem;
-    padding-left: 0;
-    padding-bottom: 1.2rem;
+    flex-direction: row;
+    padding: 0.7rem 1.4rem 0.7rem 0;
   }
   h1 {
-    margin: 0.2rem 0 0.5rem;
+    margin: 0 2rem 0.2rem 0;
   }
   .buttons {
+    flex: 1;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;

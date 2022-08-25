@@ -3,7 +3,6 @@
   import ErrorMessage from "./lib/ErrorMessage.svelte";
 
   import File from "./lib/File.svelte";
-  import AppHeader from "./lib/AppHeader.svelte";
   import serial from "./lib/serial";
   import SideBar from "./lib/SideBar.svelte";
 
@@ -14,7 +13,6 @@
 
 <ErrorMessage text={errorMessage} onDismiss={() => (errorMessage = null)} />
 <div class="screen">
-  <AppHeader />
   <div class="split">
     <SideBar />
     <File />
@@ -30,7 +28,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 3rem;
+    top: 0;
     bottom: 0;
 
     display: flex;

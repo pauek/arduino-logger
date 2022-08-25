@@ -1,5 +1,6 @@
 <script lang="ts">
   import Button from "./Button.svelte";
+  import ConnectButton from "./ConnectButton.svelte";
   import db, { fileList, selectedFile } from "./db";
   import { connectionState } from "./serial";
   import { ConnectionState } from "./types";
@@ -19,6 +20,13 @@
 </script>
 
 <div class="sidebar" class:active>
+  <div id="logo">
+    Logo
+  </div>
+  <div class="button-wrapper connect">
+    <ConnectButton />
+  </div>
+  <div class="space" />
   {#each itemList as item}
     <div
       class="file"
@@ -33,7 +41,7 @@
     </div>
   {/each}
   <div class="space" />
-  <div class="new">
+  <div class="button-wrapper">
     {#if !active}
       <Button title="New File" />
     {/if}
@@ -44,17 +52,18 @@
   .sidebar {
     padding-right: 1.4rem;
     padding-top: 0.4rem;
-    width: 10rem;
+    width: 12rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    --left-padding: 1rem;
   }
   .space {
-    height: .6rem;
+    height: 1.2rem;
   }
   .file {
     font-size: 12pt;
-    padding: 0.3rem 0.3rem 0.3rem 0.6rem;
+    padding: 0.3rem 0.3rem 0.3rem var(--left-padding);
     border-top-right-radius: 5rem;
     border-bottom-right-radius: 5rem;
     border-width: 1px;
@@ -87,9 +96,20 @@
   .active .file:hover {
     cursor: default;
   }
-  .new {
+  .button-wrapper {
     display: flex;
     flex-direction: row;
-    padding-left: .6rem;
+    padding-left: var(--left-padding);
+  }
+  .button-wrapper.connect {
+    display: block;
+    padding-left: var(--left-padding);
+    padding-right: 0.6rem;
+  }
+  #logo {
+    font-size: 16pt;
+    padding: 0.8rem;
+    padding-left: var(--left-padding);
+    margin-bottom: .8rem;
   }
 </style>
