@@ -41,7 +41,7 @@
   table td,
   table th {
     border: 1px solid #ccc;
-    padding: 0.15em 0.35em;
+    padding: 2px 5px;
   }
   table td {
     text-align: right;

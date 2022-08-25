@@ -18,8 +18,8 @@
     {/if}
   </h1>
   <div class="buttons">
-    {#if !isActive && hasData}
-      <Button title="Save to File" disabled={!hasData} />
+    {#if !isActive}
+      <Button title="Save as..." disabled={!hasData} />
     {/if}
     <div class="flex-space" />
     <Button
@@ -41,7 +41,7 @@
     padding: 0.7rem 1.4rem 0.7rem 0;
   }
   h1 {
-    margin: 0 2rem 0.2rem 0;
+    margin: 0 1.2rem 0.2rem 0;
   }
   .buttons {
     flex: 1;

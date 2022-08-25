@@ -36,6 +36,11 @@
       {:else}
         {item.file}
       {/if}
+      {#if item.selected && active}
+        <div id="dot">
+          <div class="body" />
+        </div>
+      {/if}
     </div>
   {/each}
   <div class="space" />
@@ -51,7 +56,7 @@
 <style>
   .sidebar {
     padding: 0.4rem 1.4rem 0.8rem 0;
-    width: 14rem;
+    width: 12rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -61,14 +66,45 @@
     height: 1.2rem;
   }
   .file {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     font-size: 12pt;
-    padding: 0.3rem 0.3rem 0.3rem var(--left-padding);
+    padding: 0.3rem 0.5em 0.3rem var(--left-padding);
     border-top-right-radius: 5rem;
     border-bottom-right-radius: 5rem;
     border-width: 1px;
     border-style: solid;
     border-left: none;
     border-color: transparent;
+  }
+  #dot {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 15px;
+    height: 15px;
+  }
+  #dot .body {
+    animation-duration: 1s;
+    animation-name: pulse;
+    animation-iteration-count: infinite;
+    background-color: var(--active-color);
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+  }
+  @keyframes pulse {
+    from {
+      opacity: .5;
+      transform: scale(.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
   :not(.active) .file:not(.selected) {
     cursor: pointer;

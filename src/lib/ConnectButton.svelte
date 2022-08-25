@@ -15,15 +15,15 @@
 
 <div class="button">
   {#if $connectionState === ConnectionState.disconnected}
-    <Button on:click={connect} type="big" title="Connect" />
+    <Button on:click={connect} type="big" title="Start" />
   {:else if $connectionState === ConnectionState.active}
-    <Button on:click={disconnect} type="big" title="Disconnect" />
+    <Button on:click={disconnect} type="big" title="Stop" />
   {:else if $connectionState === ConnectionState.connecting}
-    <Button on:click={disconnect} disabled type="big flat" title="Connecting..." />
+    <Button on:click={disconnect} disabled type="big flat" title="Starting..." />
   {:else if $connectionState === ConnectionState.disconnecting}
-    <Button on:click={disconnect} disabled type="big flat" title="Disconnecting..." />
+    <Button on:click={disconnect} disabled type="big flat" title="Stopping..." />
   {:else if $connectionState === ConnectionState.starting}
-    <Button on:click={disconnect} disabled type="big" title="Disconnect" />
+    <Button on:click={disconnect} disabled type="big" title="Stop" />
   {/if}
 </div>
 

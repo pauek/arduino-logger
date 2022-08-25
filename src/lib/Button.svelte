@@ -42,6 +42,7 @@
     background-color: rgba(0, 0, 120, 0.03);
   }
   button.big:hover {
+    color: white;
     background-color: var(--primary-color-darker);
   }
   button:not([disabled]):active {
