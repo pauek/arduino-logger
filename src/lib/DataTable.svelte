@@ -41,10 +41,11 @@
   table td,
   table th {
     border: 1px solid #ccc;
-    padding: 0.2em 0.4em;
+    padding: 0.15em 0.35em;
   }
   table td {
     text-align: right;
+    font-size: 10pt;
   }
   table tr:first-child td {
     font-weight: bold;
@@ -70,7 +71,6 @@
     text-align: left;
     font-style: italic;
     color: #777;
-    font-size: 95%;
   }
 
   #waiting {

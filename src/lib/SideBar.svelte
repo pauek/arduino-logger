@@ -20,9 +20,7 @@
 </script>
 
 <div class="sidebar" class:active>
-  <div id="logo">
-    Logo
-  </div>
+  <div id="logo">Logo</div>
   <div class="button-wrapper connect">
     <ConnectButton />
   </div>
@@ -46,13 +44,14 @@
       <Button title="New File" />
     {/if}
   </div>
+  <div class="flex-space" />
+  <footer>Made by <a href="https://twitter.com/pauek">@pauek</a></footer>
 </div>
 
 <style>
   .sidebar {
-    padding-right: 1.4rem;
-    padding-top: 0.4rem;
-    width: 12rem;
+    padding: 0.4rem 1.4rem 0.8rem 0;
+    width: 14rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -110,6 +109,17 @@
     font-size: 16pt;
     padding: 0.8rem;
     padding-left: var(--left-padding);
-    margin-bottom: .8rem;
+    margin-bottom: 0.4rem;
+  }
+  .flex-space {
+    flex: 1;
+  }
+  footer {
+    color: #777;
+    padding-left: var(--left-padding);
+    font-size: 70%;
+  }
+  footer a {
+    text-decoration: none;
   }
 </style>
