@@ -1,25 +1,33 @@
 <script lang="ts">
   import Button from "./Button.svelte";
-  import db, { samples, selectedFile } from "./db";
+  import db,{ samples,selectedFile } from "./db";
+  import { connectionState } from './serial';
+  import { ConnectionState } from "./types";
+
+  $: isScratch = $selectedFile === "";
+  $: hasData = $samples.length > 0;
+  $: isActive = $connectionState === ConnectionState.active;
 </script>
 
 <div class="header">
   <h1>
-    {#if $selectedFile === ""}
+    {#if isScratch}
       Scratch
     {:else}
       {$selectedFile}
     {/if}
   </h1>
   <div class="buttons">
-    <Button title="Save to File" disabled />
+    {#if !isScratch && !isActive && hasData}
+      <Button title="Save to File" disabled={!hasData} />
+    {/if}
     <div class="flex-space" />
     <Button
       title="Clear"
       on:click={db.clearFile}
-      disabled={$samples.length === 0}
+      disabled={!hasData}
     />
-    {#if $selectedFile !== ""}
+    {#if !isScratch && !isActive}
       <div class="space" />
       <Button title="Delete" on:click={db.deleteFile} />
     {/if}

@@ -13,13 +13,19 @@
   button {
     color: white;
     background-color: var(--primary-color);
-    padding: 0.4rem 0.6rem;
-    border-radius: 5rem;
+    padding: 0.3rem 0.65rem 0.2rem 0.65rem;
+    border-radius: 0.3rem;
     border-width: 0px;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    font-size: 105%;
+    font-size: 95%;
     font-weight: bold;
+    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: var(--primary-color-darker);
+  }
+  button:active {
+    box-shadow: none;
   }
   button[disabled] {
     background-color: lightgray;
