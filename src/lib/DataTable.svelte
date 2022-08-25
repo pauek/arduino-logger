@@ -2,13 +2,17 @@
   import { samples } from "./db";
   import { connectionState } from "./serial";
   import { ConnectionState } from "./types";
+
+  $: isActive = $connectionState === ConnectionState.active;
+  $: isDisconnected = $connectionState === ConnectionState.disconnected;
+
 </script>
 
 <div class="table-container">
   <table
     class="data"
-    class:active={$connectionState === ConnectionState.active}
-    class:disconnected={$connectionState === ConnectionState.disconnected}
+    class:active={isActive}
+    class:disconnected={isDisconnected}
   >
     {#if $samples !== null && $samples.length > 0}
       <thead>
@@ -29,10 +33,11 @@
           </tr>
         {/each}
       </tbody>
-    {:else if $connectionState === ConnectionState.active}
-      <p>Waiting for data...</p>
     {/if}
   </table>
+  {#if isActive && $samples.length === 0}
+    <p>Waiting for data...</p>
+  {/if}
 </div>
 
 <style>

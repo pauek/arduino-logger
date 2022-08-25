@@ -12,7 +12,7 @@
 <style>
   button {
     color: white;
-    background-color: rgb(50, 112, 255);
+    background-color: var(--primary-color);
     padding: 0.4rem 0.6rem;
     border-radius: 5rem;
     border-width: 0px;

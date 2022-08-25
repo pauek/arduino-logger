@@ -13,14 +13,14 @@
   </h1>
   <div class="buttons">
     <Button title="Save to File" disabled />
-    <div class="space" />
+    <div class="flex-space" />
     <Button
       title="Clear"
       on:click={db.clearFile}
       disabled={$samples.length === 0}
     />
-    <div class="flex-space" />
     {#if $selectedFile !== ""}
+      <div class="space" />
       <Button title="Delete" on:click={db.deleteFile} />
     {/if}
   </div>

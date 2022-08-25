@@ -4,6 +4,10 @@ body {
 }
 :root {
   font-family: sans-serif;
+  --primary-color: rgb(50, 112, 255);
+  --primary-100: rgb(221, 231, 255);
+  --active-color: rgb(28, 197, 28);
+  --active-100: rgb(225, 255, 225);
 }
 #app {
   height: 100vh;

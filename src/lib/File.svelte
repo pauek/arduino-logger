@@ -1,10 +1,10 @@
 <script lang="ts">
-  import DataHeader from "./FileHeader.svelte";
+  import FileHeader from "./FileHeader.svelte";
   import Table from "./DataTable.svelte";
 </script>
 
 <main>
-  <DataHeader />
+  <FileHeader />
   <div class="wrapper">
     <Table />
   </div>
