@@ -12,7 +12,7 @@
 <div class="header">
   <h1>
     {#if isScratch}
-      Scratch
+      <em>Scratch</em>
     {:else}
       {$selectedFile}
     {/if}

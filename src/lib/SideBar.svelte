@@ -26,7 +26,7 @@
       on:click={select(item.file)}
     >
       {#if item.file === ""}
-        Scratch
+        <em>Scratch</em>
       {:else}
         {item.file}
       {/if}
@@ -50,15 +50,13 @@
     justify-content: flex-start;
   }
   .space {
-    height: 1rem;
+    height: .6rem;
   }
   .file {
-    font-weight: bold;
-    font-size: 15pt;
-    padding: 0.4rem;
+    font-size: 12pt;
+    padding: 0.3rem 0.3rem 0.3rem 0.6rem;
     border-top-right-radius: 5rem;
     border-bottom-right-radius: 5rem;
-    margin-bottom: 0.3rem;
     border-width: 1px;
     border-style: solid;
     border-left: none;
@@ -70,12 +68,16 @@
   :not(.active) .file:not(.selected):hover {
     background-color: #f7f7f7;
   }
+  .file.selected {
+    font-weight: bold;
+    color: var(--primary-color);
+    background-color: var(--primary-100);
+  }
   .active .file {
     color: lightgray;
   }
   .active .file.selected {
     background-color: var(--active-100);
-    border-color: var(--active-color);
     color: var(--active-color);
   }
 
@@ -85,15 +87,9 @@
   .active .file:hover {
     cursor: default;
   }
-  .file.selected {
-    color: var(--primary-color);
-    background-color: var(--primary-100);
-    border-color: var(--primary-color);
-
-  }
   .new {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    padding-left: .6rem;
   }
 </style>
