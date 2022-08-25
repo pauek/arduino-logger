@@ -5,40 +5,33 @@
 
   $: isActive = $connectionState === ConnectionState.active;
   $: isDisconnected = $connectionState === ConnectionState.disconnected;
-
 </script>
 
-<div class="table-container">
-  <table
-    class="data"
-    class:active={isActive}
-    class:disconnected={isDisconnected}
-  >
-    {#if $samples !== null && $samples.length > 0}
-      <thead>
-        <th>Time</th>
-        {#each $samples[0].values as _, i}
-          <th>Col {i}</th>
-        {/each}
-      </thead>
-      <tbody>
-        {#each $samples.slice(-50).reverse() as s}
-          <tr>
-            <td class="timestamp">
-              {s.timestamp.toLocaleTimeString("es-ES")}
-            </td>
-            {#each s.values as value}
-              <td>{value}</td>
-            {/each}
-          </tr>
-        {/each}
-      </tbody>
-    {/if}
-  </table>
-  {#if isActive && $samples.length === 0}
-    <p>Waiting for data...</p>
+<table class="data" class:active={isActive} class:disconnected={isDisconnected}>
+  {#if $samples !== null && $samples.length > 0}
+    <thead>
+      <th>Time</th>
+      {#each $samples[0].values as _, i}
+        <th>Col {i}</th>
+      {/each}
+    </thead>
+    <tbody>
+      {#each $samples.slice(-50).reverse() as s}
+        <tr>
+          <td class="timestamp">
+            {s.timestamp.toLocaleTimeString("es-ES")}
+          </td>
+          {#each s.values as value}
+            <td>{value}</td>
+          {/each}
+        </tr>
+      {/each}
+    </tbody>
   {/if}
-</div>
+</table>
+{#if isActive && $samples.length === 0}
+  <div id="waiting">Waiting for data...</div>
+{/if}
 
 <style>
   table {
@@ -78,5 +71,11 @@
     font-style: italic;
     color: #777;
     font-size: 95%;
+  }
+
+  #waiting {
+    padding: 1rem 0 0 1rem;
+    color: gray;
+    font-style: italic;
   }
 </style>

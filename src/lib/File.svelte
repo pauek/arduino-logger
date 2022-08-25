@@ -1,12 +1,12 @@
 <script lang="ts">
   import FileHeader from "./FileHeader.svelte";
-  import Table from "./DataTable.svelte";
+  import DataTable from "./DataTable.svelte";
 </script>
 
 <main>
   <FileHeader />
   <div class="wrapper">
-    <Table />
+    <DataTable />
   </div>
 </main>
 
