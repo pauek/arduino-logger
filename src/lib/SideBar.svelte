@@ -20,7 +20,7 @@
 </script>
 
 <div class="sidebar" class:active>
-  <div id="logo">Logo</div>
+  <div id="logo">Arduino Logger</div>
   <div class="button-wrapper connect">
     <ConnectButton />
   </div>
