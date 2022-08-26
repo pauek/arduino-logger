@@ -6,12 +6,10 @@
   import serial from "./lib/serial";
   import SideBar from "./lib/SideBar.svelte";
 
-  let errorMessage: String = null;
-
   onDestroy(() => serial.close());
 </script>
 
-<ErrorMessage text={errorMessage} onDismiss={() => (errorMessage = null)} />
+<ErrorMessage />
 <div class="screen">
   <div class="split">
     <SideBar />

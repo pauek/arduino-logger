@@ -1,15 +1,24 @@
 <script lang="ts">
   import Button from "./Button.svelte";
-  import serial, { connectionState } from "./serial";
+  import serial, { connectionState, errorMessage } from "./serial";
   import { ConnectionState } from "./types";
 
   const connect = async () => {
-    await serial.connect();
-    serial.goReadData();
+    try {
+      await serial.connect();
+      serial.goReadData();
+    } catch (err) {
+      $errorMessage = `Cannot connect: ${err.message}`;
+      $connectionState = ConnectionState.disconnected;
+    }
   };
 
   const disconnect = async () => {
-    await serial.close();
+    try {
+      await serial.close();
+    } catch (err) {
+      $errorMessage = `Cannot disconnect: ${err.message}`;
+    }
   };
 </script>
 
@@ -19,9 +28,19 @@
   {:else if $connectionState === ConnectionState.active}
     <Button on:click={disconnect} type="big" title="Stop" />
   {:else if $connectionState === ConnectionState.connecting}
-    <Button on:click={disconnect} disabled type="big flat" title="Starting..." />
+    <Button
+      on:click={disconnect}
+      disabled
+      type="big flat"
+      title="Starting..."
+    />
   {:else if $connectionState === ConnectionState.disconnecting}
-    <Button on:click={disconnect} disabled type="big flat" title="Stopping..." />
+    <Button
+      on:click={disconnect}
+      disabled
+      type="big flat"
+      title="Stopping..."
+    />
   {:else if $connectionState === ConnectionState.starting}
     <Button on:click={disconnect} disabled type="big" title="Stop" />
   {/if}

@@ -10,4 +10,5 @@ export enum ConnectionState {
   starting,
   active,
   disconnecting,
+  error,
 }

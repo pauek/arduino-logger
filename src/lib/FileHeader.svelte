@@ -1,12 +1,20 @@
 <script lang="ts">
   import Button from "./Button.svelte";
-  import db,{ samples,selectedFile } from "./db";
-  import { connectionState } from './serial';
+  import db, { samples, selectedFile } from "./db";
+  import { connectionState } from "./serial";
   import { ConnectionState } from "./types";
 
   $: isScratch = $selectedFile === "";
   $: hasData = $samples.length > 0;
   $: isActive = $connectionState === ConnectionState.active;
+
+  const saveFile = () => {
+    const a = document.createElement("a");
+    const content = db.fileContent();
+    a.href = URL.createObjectURL(new Blob([content], { type: "text/csv" }));
+    a.download = isScratch ? "scratch.csv" : $selectedFile + ".csv";
+    a.click();
+  };
 </script>
 
 <div class="header">
@@ -19,14 +27,10 @@
   </h1>
   <div class="buttons">
     {#if !isActive}
-      <Button title="Save as..." disabled={!hasData} />
+      <Button title="Save as..." on:click={saveFile} disabled={!hasData} />
     {/if}
     <div class="flex-space" />
-    <Button
-      title="Clear"
-      on:click={db.clearFile}
-      disabled={!hasData}
-    />
+    <Button title="Clear" on:click={db.clearFile} disabled={!hasData} />
     {#if !isScratch && !isActive}
       <div class="space" />
       <Button title="Delete" on:click={db.deleteFile} />

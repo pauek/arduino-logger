@@ -4,6 +4,7 @@ import db from './db';
 
 let _state = ConnectionState.disconnected;
 export const connectionState = writable<ConnectionState>(_state);
+export const errorMessage = writable<String>(null);
 
 const setState = (s: ConnectionState) => {
   _state = s;
@@ -50,7 +51,8 @@ const goReadData = async () => {
       db.addSample(newSample);
     }
   } catch (err) {
-    console.error(err);
+    setState(ConnectionState.error);
+    errorMessage.set(`Cannot read from serial port: ${err.toString()}`);
   }
 };
 

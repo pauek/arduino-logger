@@ -13,6 +13,19 @@ let selected = initialFile;
 export const selectedFile = writable(initialFile);
 export const fileList = writable([...inMemorySamples.keys()]);
 
+const fileContent = () => {
+  const samples = inMemorySamples.get(selected);
+  const { values } = samples[0];
+  const header = [
+    "Timestamp",
+    ...[...Array(values.length)].map((_, i) => `Col ${i + 1}`),
+  ].join(";");
+  const lines = samples.map(({ timestamp, values }) =>
+    [Number(timestamp), ...values].join(";")
+  );
+  return [header, ...lines].join("\n");
+};
+
 const addSample = (sample: Sample) => {
   const data = inMemorySamples.get(selected);
   data.push(sample);
@@ -63,6 +76,7 @@ const deleteFile = () => {
 };
 
 export default {
+  fileContent,
   addSample,
   setSelectedFile,
   clearFile,
