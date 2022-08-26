@@ -1,6 +1,7 @@
 <script lang="ts">
   import Button from "./Button.svelte";
   import db, { samples, selectedFile } from "./db";
+  import EditableFileName from "./EditableFileName.svelte";
   import { connectionState } from "./serial";
   import { ConnectionState } from "./types";
 
@@ -18,16 +19,10 @@
 </script>
 
 <div class="header">
-  <h1>
-    {#if isScratch}
-      <em>Scratch</em>
-    {:else}
-      {$selectedFile}
-    {/if}
-  </h1>
+  <EditableFileName {isScratch} name={$selectedFile} disabled={isActive} />
   <div class="buttons">
     {#if !isActive}
-      <Button title="Save as..." on:click={saveFile} disabled={!hasData} />
+      <Button title="Save to File" on:click={saveFile} disabled={!hasData} />
     {/if}
     <div class="flex-space" />
     <Button title="Clear" on:click={db.clearFile} disabled={!hasData} />

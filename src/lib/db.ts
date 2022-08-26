@@ -6,8 +6,6 @@ export const samples = writable<Sample[]>([]);
 const initialFile = "";
 const inMemorySamples: Map<string, Sample[]> = new Map();
 inMemorySamples.set(initialFile, []);
-inMemorySamples.set("abcde", []);
-inMemorySamples.set("12345", []);
 
 let selected = initialFile;
 export const selectedFile = writable(initialFile);
@@ -63,6 +61,17 @@ const renameFile = (oldName: string, newName: string) => {
   }
 };
 
+let currentIndex = 1;
+const newFile = () => {
+  let newFileName;
+  do {
+    newFileName = `File ${currentIndex}`;
+    currentIndex++;
+  } while (inMemorySamples.has(newFileName));
+  inMemorySamples.set(newFileName, []);
+  fileList.update($fileList => [...$fileList, newFileName]);
+}
+
 const deleteFile = () => {
   if (selected === "") {
     // Ignore "scratch" file
@@ -80,6 +89,7 @@ export default {
   addSample,
   setSelectedFile,
   clearFile,
+  newFile,
   deleteFile,
   renameFile,
 };
