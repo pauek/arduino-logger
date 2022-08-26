@@ -60,6 +60,7 @@
     transition: ease-out;
   }
   .error-message .wrapper {
+    pointer-events: auto;
     display: flex;
     flex-direction: row;
     align-items: center;
