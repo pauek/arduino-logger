@@ -12,7 +12,7 @@
     <thead>
       <th>Time</th>
       {#each $samples[0].values as _, i}
-        <th>Col {i}</th>
+        <th>Col {i+1}</th>
       {/each}
     </thead>
     <tbody>
