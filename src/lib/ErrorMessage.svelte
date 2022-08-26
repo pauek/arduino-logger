@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
-
   import { errorMessage } from "../lib/serial";
 
   export let duration: number = 5000;
@@ -48,22 +47,22 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    color: white;
-    opacity: 0;
     pointer-events: none; /* Para poder clicar botones debajo!! */
-    transition-property: opacity;
-    transition-duration: 200ms;
-    transition-timing-function: ease-out;
   }
-  .error-message.visible {
+  .error-message.visible .wrapper {
     opacity: 1;
-    transition: ease-out;
+    pointer-events: auto;
   }
   .error-message .wrapper {
-    pointer-events: auto;
+    opacity: 0;
+    transition-property: all;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+    pointer-events: none;
     display: flex;
     flex-direction: row;
     align-items: center;
+    color: white;
     background-color: red;
     padding: 0.6rem 0.6rem 0.6rem 1.2rem;
     border-radius: 0.25rem;
