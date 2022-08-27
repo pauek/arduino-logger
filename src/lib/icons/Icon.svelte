@@ -9,6 +9,7 @@
   import IconPlay from "./IconPlay.svelte";
   import IconRecord from "./IconRecord.svelte";
   import IconSave from "./IconSave.svelte";
+  import IconStop from "./IconStop.svelte";
 </script>
 
 {#if name === "add"}
@@ -19,6 +20,8 @@
   <IconDelete {size} {color} />
 {:else if name === "play"}
   <IconPlay {size} {color} />
+{:else if name === "stop"}
+  <IconStop {size} {color} />
 {:else if name === "record"}
   <IconRecord {size} {color} />
 {:else if name === "save"}
