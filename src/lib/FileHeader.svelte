@@ -22,13 +22,13 @@
   <EditableFileName {isScratch} name={$selectedFile} disabled={isActive} />
   <div class="buttons">
     {#if !isActive}
-      <Button title="Save to File" on:click={saveFile} disabled={!hasData} />
+      <Button icon="save" title="Save to File" on:click={saveFile} disabled={!hasData} />
     {/if}
     <div class="flex-space" />
-    <Button title="Clear" on:click={db.clearFile} disabled={!hasData} />
+    <Button icon="clear" title="Clear" on:click={db.clearFile} disabled={!hasData} />
     {#if !isScratch && !isActive}
       <div class="space" />
-      <Button title="Delete" on:click={db.deleteFile} />
+      <Button icon="delete" title="Delete" on:click={db.deleteFile} />
     {/if}
   </div>
 </div>

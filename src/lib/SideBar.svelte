@@ -46,7 +46,7 @@
   <div class="space" />
   <div class="button-wrapper">
     {#if !active}
-      <Button title="New File" on:click={db.newFile} />
+      <Button icon="add" title="New File" on:click={db.newFile} />
     {/if}
   </div>
   <div class="flex-space" />

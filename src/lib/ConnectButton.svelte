@@ -24,9 +24,9 @@
 
 <div class="button">
   {#if $connectionState === ConnectionState.disconnected}
-    <Button on:click={connect} type="big" title="Start" />
+    <Button icon="record" on:click={connect} type="big" title="Start" />
   {:else if $connectionState === ConnectionState.active}
-    <Button on:click={disconnect} type="big" title="Stop" />
+    <Button icon="stop" on:click={disconnect} type="big" title="Stop" />
   {:else if $connectionState === ConnectionState.connecting}
     <Button
       on:click={disconnect}
