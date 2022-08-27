@@ -39,9 +39,6 @@
     flex-direction: row;
     padding: 0.7rem 1.4rem 0.7rem 0;
   }
-  h1 {
-    margin: 0 1.2rem 0.2rem 0;
-  }
   .buttons {
     flex: 1;
     display: flex;

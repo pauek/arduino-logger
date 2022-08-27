@@ -20,7 +20,9 @@
 </script>
 
 <div class="sidebar" class:active>
-  <div id="logo">Arduino Logger</div>
+  <div id="logo" title="Arduino Logger">
+    <img src="logo.svg" alt="logo" width="160" height="60" />
+  </div>
   <div class="button-wrapper connect">
     <ConnectButton />
   </div>
@@ -55,7 +57,7 @@
 
 <style>
   .sidebar {
-    padding: 0.4rem 1.4rem 0.8rem 0;
+    padding: 0.8rem 1.4rem 0.8rem 0;
     width: 12rem;
     display: flex;
     flex-direction: column;
@@ -143,9 +145,8 @@
   }
   #logo {
     font-size: 16pt;
-    padding: 0.8rem;
     padding-left: var(--left-padding);
-    margin-bottom: 0.4rem;
+    margin-bottom: 1.2rem;
   }
   .flex-space {
     flex: 1;
