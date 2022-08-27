@@ -65,7 +65,7 @@ let currentIndex = 1;
 const newFile = () => {
   let newFileName;
   do {
-    newFileName = `File ${currentIndex}`;
+    newFileName = `New File ${currentIndex}`;
     currentIndex++;
   } while (inMemorySamples.has(newFileName));
   inMemorySamples.set(newFileName, []);
