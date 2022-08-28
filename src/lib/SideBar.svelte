@@ -21,7 +21,7 @@
 
 <div class="sidebar" class:active>
   <div id="logo" title="Arduino Logger">
-    <img src="logo.svg" alt="logo" width="160" height="60" />
+    <img src="logo.svg" alt="logo" width="150" height="50" />
   </div>
   <div class="button-wrapper connect">
     <ConnectButton />
@@ -48,7 +48,7 @@
   <div class="space" />
   <div class="button-wrapper">
     {#if !active}
-      <Button icon="add" title="New File" on:click={db.newFile} />
+      <Button icon="add" title="New" on:click={db.newFile} />
     {/if}
   </div>
   <div class="flex-space" />
@@ -57,12 +57,12 @@
 
 <style>
   .sidebar {
-    padding: 0.8rem 1.4rem 0.8rem 0;
+    padding: 0.8rem 0.8rem 0.8rem 0;
     width: 12rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    --left-padding: 1rem;
+    --left-padding: .8rem;
   }
   .space {
     height: 1.2rem;

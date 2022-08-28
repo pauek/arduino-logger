@@ -20,6 +20,7 @@
 
 <div class="header">
   <EditableFileName {isScratch} name={$selectedFile} disabled={isActive} />
+  <div class="vspace"></div>
   <div class="buttons">
     {#if !isActive}
       <Button icon="save" title="Save to File" on:click={saveFile} disabled={!hasData} />
@@ -36,7 +37,7 @@
 <style>
   .header {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     padding: 0.7rem 1.4rem 0.7rem 0;
   }
   .buttons {
@@ -45,6 +46,9 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+  }
+  .vspace {
+    height: .1rem;
   }
   .space {
     width: 0.4rem;
