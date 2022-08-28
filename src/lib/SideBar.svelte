@@ -27,7 +27,7 @@
     <ConnectButton />
   </div>
   <div class="space" />
-  <div class="button-wrapper">
+  <div class="button-wrapper new">
     {#if !active}
       <Button icon="add" title="New" on:click={db.newFile} />
     {/if}
@@ -142,10 +142,12 @@
     flex-direction: row;
     padding-left: var(--left-padding);
   }
+  .button-wrapper.new {
+    justify-content: flex-end;
+  }
   .button-wrapper.connect {
     display: block;
     padding-left: var(--left-padding);
-    padding-right: 0.6rem;
   }
   #logo {
     font-size: 16pt;
