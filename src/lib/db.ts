@@ -11,6 +11,54 @@ let selected = initialFile;
 export const selectedFile = writable(initialFile);
 export const fileList = writable([...inMemorySamples.keys()]);
 
+// Database
+const DB_NAME = "arduino-data";
+const OBJSTORE_NAME = "samples";
+let database: IDBDatabase;
+
+const openDatabase = async () => {
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    const openRequest = indexedDB.open(DB_NAME);
+    openRequest.addEventListener("error", (e) => {
+      reject(`Cannot open internal Database`);
+    });
+    openRequest.addEventListener("upgradeneeded", (e) => {
+      console.log("Creating Database");
+      const db = e.target["result"];
+      const objStore = db.createObjectStore(OBJSTORE_NAME, {
+        keyPath: "timestamp",
+      });
+      objStore.createIndex("file", "file");
+    });
+    openRequest.addEventListener("success", (e) => {
+      const db = e.target["result"];
+      resolve(db);
+    });
+  });
+};
+
+const saveSampleInDatabase = async (sample: Sample) => {
+  return new Promise<void>((resolve, reject) => {
+    console.log("saveSample", sample);
+    const addRequest = database
+      .transaction([OBJSTORE_NAME], "readwrite")
+      .objectStore(OBJSTORE_NAME)
+      .add(sample);
+    addRequest.addEventListener("error", (e) => {
+      reject(`Cannot save sample`);
+    });
+    addRequest.addEventListener("success", (e) => {
+      console.log("Sample saved");
+      resolve();
+    });
+  });
+};
+
+openDatabase().then((db) => {
+  console.log("Database opened", db);
+  database = db;
+});
+
 const fileContent = () => {
   const samples = inMemorySamples.get(selected);
   const { values } = samples[0];
@@ -26,8 +74,10 @@ const fileContent = () => {
 
 const addSample = (sample: Sample) => {
   const data = inMemorySamples.get(selected);
+  sample.file = selected;
   data.push(sample);
   samples.set(data);
+  saveSampleInDatabase(sample);
 };
 
 const setSelectedFile = (name: string) => {
@@ -69,8 +119,8 @@ const newFile = () => {
     currentIndex++;
   } while (inMemorySamples.has(newFileName));
   inMemorySamples.set(newFileName, []);
-  fileList.update($fileList => [...$fileList, newFileName]);
-}
+  fileList.update(($fileList) => [...$fileList, newFileName]);
+};
 
 const deleteFile = () => {
   if (selected === "") {
@@ -83,7 +133,7 @@ const deleteFile = () => {
     fileList.update(($fileList) => {
       const index = $fileList.indexOf(selected);
       const newFileList = $fileList.filter((f) => f !== selected);
-      last = newFileList[index] || newFileList[newFileList.length-1];
+      last = newFileList[index] || newFileList[newFileList.length - 1];
       return newFileList;
     });
     setSelectedFile(last);
