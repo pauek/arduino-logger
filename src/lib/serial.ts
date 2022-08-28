@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
+import db from "./db";
 import { ConnectionState, type Sample } from "./types";
-import db from './db';
 
 let _state = ConnectionState.disconnected;
 export const connectionState = writable<ConnectionState>(_state);
