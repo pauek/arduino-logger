@@ -21,6 +21,7 @@
   .wrapper {
     flex: 1;
     overflow-y: scroll;
-    background-color: #f5f5f5;
+    background-color: #f9f9f9;
+    border-top-left-radius: .2rem;
   }
 </style>
