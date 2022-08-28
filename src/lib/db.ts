@@ -79,8 +79,14 @@ const deleteFile = () => {
   }
   if (inMemorySamples.has(selected)) {
     inMemorySamples.delete(selected);
-    fileList.update(($fileList) => $fileList.filter((f) => f !== selected));
-    setSelectedFile("");
+    let last;
+    fileList.update(($fileList) => {
+      const index = $fileList.indexOf(selected);
+      const newFileList = $fileList.filter((f) => f !== selected);
+      last = newFileList[index] || newFileList[newFileList.length-1];
+      return newFileList;
+    });
+    setSelectedFile(last);
   }
 };
 
