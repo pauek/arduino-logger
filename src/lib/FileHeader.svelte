@@ -1,17 +1,17 @@
 <script lang="ts">
   import Button from "./Button.svelte";
-  import db, { samples, selectedFile } from "./db";
+  import db, { samples, SCRATCH_FILENAME, selectedFile } from "./db";
   import EditableFileName from "./EditableFileName.svelte";
   import { connectionState } from "./serial";
   import { ConnectionState } from "./types";
 
-  $: isScratch = $selectedFile === "";
+  $: isScratch = $selectedFile === SCRATCH_FILENAME;
   $: hasData = $samples.length > 0;
   $: isActive = $connectionState === ConnectionState.active;
 
-  const saveFile = () => {
+  const saveFile = async () => {
     const a = document.createElement("a");
-    const content = db.fileContent();
+    const content = await db.fileContent();
     a.href = URL.createObjectURL(new Blob([content], { type: "text/csv" }));
     a.download = isScratch ? "scratch.csv" : $selectedFile + ".csv";
     a.click();
@@ -20,16 +20,26 @@
 
 <div class="header">
   <EditableFileName {isScratch} name={$selectedFile} disabled={isActive} />
-  <div class="vspace"></div>
+  <div class="vspace" />
   <div class="buttons">
     {#if !isActive}
-      <Button icon="save" title="Save to File" on:click={saveFile} disabled={!hasData} />
+      <Button
+        icon="save"
+        title="Export"
+        on:click={saveFile}
+        disabled={!hasData}
+      />
     {/if}
     <div class="flex-space" />
-    <Button icon="clear" title="Clear" on:click={db.clearFile} disabled={!hasData} />
+    <Button
+      icon="clear"
+      title="Clear"
+      on:click={db.fileClear}
+      disabled={!hasData}
+    />
     {#if !isScratch && !isActive}
       <div class="space" />
-      <Button icon="delete" title="Delete" on:click={db.deleteFile} />
+      <Button icon="delete" title="Delete" on:click={db.fileDelete} />
     {/if}
   </div>
 </div>
@@ -48,7 +58,7 @@
     align-items: center;
   }
   .vspace {
-    height: .1rem;
+    height: 0.1rem;
   }
   .space {
     width: 0.4rem;

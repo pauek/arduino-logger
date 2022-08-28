@@ -1,7 +1,7 @@
 <script lang="ts">
   import Button from "./Button.svelte";
   import ConnectButton from "./ConnectButton.svelte";
-  import db, { fileList, selectedFile } from "./db";
+  import db, { fileList, SCRATCH_FILENAME, selectedFile } from "./db";
   import { connectionState } from "./serial";
   import { ConnectionState } from "./types";
 
@@ -14,23 +14,21 @@
 
   const select = (file: string) => () => {
     if ($connectionState !== ConnectionState.active) {
-      db.setSelectedFile(file);
+      db.fileSelect(file);
     }
   };
 </script>
 
 <div class="sidebar" class:active>
   <div id="logo" title="Arduino Logger">
-    <img src="logo.svg" alt="logo" width="150" height="50" />
+    <img src="logo.svg" alt="logo" width="124" height="42" />
   </div>
   <div class="button-wrapper connect">
     <ConnectButton />
   </div>
   <div class="space" />
   <div class="button-wrapper new">
-    {#if !active}
-      <Button icon="add" title="New" on:click={db.newFile} />
-    {/if}
+    <Button icon="add" title="New" on:click={db.fileNew} disabled={active} />
   </div>
   <div class="small-space" />
   {#each itemList as item}
@@ -39,7 +37,7 @@
       class:selected={item.selected}
       on:click={select(item.file)}
     >
-      {#if item.file === ""}
+      {#if item.file === SCRATCH_FILENAME}
         <em>Scratch</em>
       {:else}
         {item.file}
@@ -66,10 +64,10 @@
     --left-padding: 0.8rem;
   }
   .space {
-    height: .6rem;
+    height: 0.6rem;
   }
   .small-space {
-    height: .6rem;
+    height: 0.6rem;
   }
   .file {
     display: flex;
@@ -151,7 +149,8 @@
   }
   #logo {
     font-size: 16pt;
-    padding-left: var(--left-padding);
+    padding-top: .5rem;
+    padding-left: calc(1.4rem + var(--left-padding));
     margin-bottom: 1.2rem;
   }
   .flex-space {

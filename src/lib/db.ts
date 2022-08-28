@@ -1,22 +1,20 @@
-import { writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
 import type { Sample } from "./types";
-
-export const samples = writable<Sample[]>([]);
-
-const initialFile = "";
-const inMemorySamples: Map<string, Sample[]> = new Map();
-inMemorySamples.set(initialFile, []);
-
-let selected = initialFile;
-export const selectedFile = writable(initialFile);
-export const fileList = writable([...inMemorySamples.keys()]);
 
 // Database
 const DB_NAME = "arduino-data";
-const OBJSTORE_NAME = "samples";
-let database: IDBDatabase;
+const SAMPLES_OBJSTORE_NAME = "samples";
+const FILES_OBJSTORE_NAME = "files";
+const FILE_INDEX_NAME = "file";
+export const SCRATCH_FILENAME = "";
 
-const openDatabase = async () => {
+export const samples = writable<Sample[]>([]);
+
+let database: IDBDatabase;
+let filenames: Set<string>;
+export let fileList: Writable<string[]> = writable([]);
+
+const dbOpen = async () => {
   return new Promise<IDBDatabase>((resolve, reject) => {
     const openRequest = indexedDB.open(DB_NAME);
     openRequest.addEventListener("error", (e) => {
@@ -24,11 +22,11 @@ const openDatabase = async () => {
     });
     openRequest.addEventListener("upgradeneeded", (e) => {
       console.log("Creating Database");
-      const db = e.target["result"];
-      const objStore = db.createObjectStore(OBJSTORE_NAME, {
+      const db = openRequest.result;
+      db.createObjectStore(SAMPLES_OBJSTORE_NAME, {
         keyPath: "timestamp",
-      });
-      objStore.createIndex("file", "file");
+      }).createIndex(FILE_INDEX_NAME, "file");
+      db.createObjectStore(FILES_OBJSTORE_NAME, { keyPath: "name" });
     });
     openRequest.addEventListener("success", (e) => {
       const db = e.target["result"];
@@ -37,12 +35,21 @@ const openDatabase = async () => {
   });
 };
 
-const saveSampleInDatabase = async (sample: Sample) => {
+const init = async () => {
+  database = await dbOpen();
+  console.log("Opened Database");
+  const files = await dbFilesGetAll();
+  filenames = new Set([SCRATCH_FILENAME, ...files]);
+  fileList.set([...filenames.values()]);
+  fileSelect(SCRATCH_FILENAME);
+};
+
+const dbSampleSave = async (sample: Sample) => {
   return new Promise<void>((resolve, reject) => {
     console.log("saveSample", sample);
     const addRequest = database
-      .transaction([OBJSTORE_NAME], "readwrite")
-      .objectStore(OBJSTORE_NAME)
+      .transaction([SAMPLES_OBJSTORE_NAME], "readwrite")
+      .objectStore(SAMPLES_OBJSTORE_NAME)
       .add(sample);
     addRequest.addEventListener("error", (e) => {
       reject(`Cannot save sample`);
@@ -54,13 +61,150 @@ const saveSampleInDatabase = async (sample: Sample) => {
   });
 };
 
-openDatabase().then((db) => {
-  console.log("Database opened", db);
-  database = db;
-});
+const dbFilesGetAll = async (): Promise<string[]> => {
+  return new Promise((resolve, reject) => {
+    const request = database
+      .transaction([FILES_OBJSTORE_NAME], "readonly")
+      .objectStore(FILES_OBJSTORE_NAME)
+      .getAll();
+    request.onerror = () => reject(`Can't read available files`);
+    request.onsuccess = () => {
+      resolve(request.result.map((file) => file.name));
+    };
+  });
+};
 
-const fileContent = () => {
-  const samples = inMemorySamples.get(selected);
+const dbSamplesGetAll = async (file: string): Promise<Sample[]> => {
+  return new Promise((resolve, reject) => {
+    const range = IDBKeyRange.only(file);
+    const samples = [];
+    const request = database
+      .transaction([SAMPLES_OBJSTORE_NAME], "readonly")
+      .objectStore(SAMPLES_OBJSTORE_NAME)
+      .index(FILE_INDEX_NAME)
+      .openCursor(range);
+    request.onerror = (e) => {
+      reject(`Couldn't get samples from "${file}"`);
+    };
+    request.onsuccess = (e) => {
+      const cursor = request.result;
+      if (cursor) {
+        samples.push(cursor.value);
+        cursor.continue();
+      } else {
+        resolve(samples);
+      }
+    };
+  });
+};
+
+const dbSamplesDeleteAll = async (file: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const range = IDBKeyRange.only(file);
+    const objstore = database
+      .transaction([SAMPLES_OBJSTORE_NAME], "readwrite")
+      .objectStore(SAMPLES_OBJSTORE_NAME);
+    const request = objstore.index(FILE_INDEX_NAME).openKeyCursor(range);
+    request.onerror = () => reject();
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (cursor) {
+        objstore.delete(cursor.primaryKey);
+        cursor.continue();
+      } else {
+        resolve();
+      }
+    };
+  });
+};
+
+const dbSamplesMove = async (
+  oldFile: string,
+  newFile: string
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const range = IDBKeyRange.only(oldFile);
+    const objstore = database
+      .transaction([SAMPLES_OBJSTORE_NAME], "readwrite")
+      .objectStore(SAMPLES_OBJSTORE_NAME);
+    const req1 = objstore.index(FILE_INDEX_NAME).openCursor(range);
+    req1.onerror = () => reject();
+    req1.onsuccess = () => {
+      const cursor = req1.result;
+      if (cursor) {
+        const sample = cursor.value;
+        sample.file = newFile;
+        const req2 = objstore.put(sample);
+        req2.onerror = () => reject();
+        req2.onsuccess = () => cursor.continue();
+      } else {
+        resolve();
+      }
+    };
+  });
+};
+
+const dbFilesAdd = (name: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const request = database
+      .transaction([FILES_OBJSTORE_NAME], "readwrite")
+      .objectStore(FILES_OBJSTORE_NAME)
+      .add({ name });
+    request.onerror = () => reject();
+    request.onsuccess = () => resolve();
+  });
+};
+
+const dbFilesRemove = (name: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const request = database
+      .transaction([FILES_OBJSTORE_NAME], "readwrite")
+      .objectStore(FILES_OBJSTORE_NAME)
+      .delete(name);
+    request.onerror = () => reject();
+    request.onsuccess = () => resolve();
+  });
+};
+
+let currentIndex = 1;
+const generateFileName = (): string => {
+  let newFileName;
+  do {
+    newFileName = `New File ${currentIndex}`;
+    currentIndex++;
+  } while (filenames.has(newFileName));
+  return newFileName;
+};
+
+const fileNew = async () => {
+  const name = generateFileName();
+  await dbFilesAdd(name);
+  filenames.add(name);
+  fileList.set([...filenames.values()]);
+  selected = name;
+  selectedFile.set(selected);
+  samples.set([]);
+};
+
+const fileDelete = async (): Promise<void> => {
+  if (selected === SCRATCH_FILENAME) {
+    return; // Ignore "scratch" file
+  }
+  await dbSamplesDeleteAll(selected);
+  await dbFilesRemove(selected);
+  filenames.delete(selected);
+  fileList.update(($fileList) => {
+    const index = $fileList.indexOf(selected);
+    filenames.delete(selected);
+    const newFileList = [...filenames.values()];
+    selected = newFileList[index] || newFileList[newFileList.length - 1];
+    return newFileList;
+  });
+  fileSelect(selected);
+};
+
+const fileContent = async () => {
+  const samples = await dbSamplesGetAll(selected);
   const { values } = samples[0];
   const header = [
     "Timestamp",
@@ -72,80 +216,45 @@ const fileContent = () => {
   return [header, ...lines].join("\n");
 };
 
-const addSample = (sample: Sample) => {
-  const data = inMemorySamples.get(selected);
-  sample.file = selected;
-  data.push(sample);
-  samples.set(data);
-  saveSampleInDatabase(sample);
+const fileClear = async () => {
+  await dbSamplesDeleteAll(selected);
+  samples.set([]);
 };
 
-const setSelectedFile = (name: string) => {
-  if (inMemorySamples.has(name)) {
-    samples.set(inMemorySamples.get(name));
-  } else {
-    inMemorySamples.set(name, []);
-    samples.set([]);
-    fileList.update(($fileList) => [...$fileList, name]);
-  }
+const fileRename = async (newName: string): Promise<void> => {
+  await dbSamplesMove(selected, newName);
+  filenames.delete(selected);
+  await dbFilesRemove(selected);
+  filenames.add(newName);
+  await dbFilesAdd(newName);
+  fileList.set([...filenames.values()]);
+  selected = newName;
+  selectedFile.set(selected);
+};
+
+let selected = SCRATCH_FILENAME;
+export const selectedFile = writable(selected);
+
+const fileSelect = async (name: string): Promise<void> => {
+  samples.set(await dbSamplesGetAll(name));
   selected = name;
   selectedFile.set(name);
 };
 
-const clearFile = () => {
-  if (inMemorySamples.has(selected)) {
-    inMemorySamples.set(selected, []);
-    samples.set([]);
-  }
+const addSample = async (sample: Sample) => {
+  sample.file = selected; // Set the selected file for the index
+  await dbSampleSave(sample);
+  samples.update(($samples) => [...$samples, sample]);
 };
 
-const renameFile = (oldName: string, newName: string) => {
-  if (inMemorySamples.has(oldName)) {
-    const data = inMemorySamples.get(oldName);
-    inMemorySamples.set(newName, data);
-    inMemorySamples.delete(oldName);
-    fileList.update(($fileList) => [
-      ...$fileList.filter((f) => f !== oldName),
-      newName,
-    ]);
-  }
-};
-
-let currentIndex = 1;
-const newFile = () => {
-  let newFileName;
-  do {
-    newFileName = `New File ${currentIndex}`;
-    currentIndex++;
-  } while (inMemorySamples.has(newFileName));
-  inMemorySamples.set(newFileName, []);
-  fileList.update(($fileList) => [...$fileList, newFileName]);
-};
-
-const deleteFile = () => {
-  if (selected === "") {
-    // Ignore "scratch" file
-    return;
-  }
-  if (inMemorySamples.has(selected)) {
-    inMemorySamples.delete(selected);
-    let last;
-    fileList.update(($fileList) => {
-      const index = $fileList.indexOf(selected);
-      const newFileList = $fileList.filter((f) => f !== selected);
-      last = newFileList[index] || newFileList[newFileList.length - 1];
-      return newFileList;
-    });
-    setSelectedFile(last);
-  }
-};
+init();
 
 export default {
-  fileContent,
+  fileNew,
+  fileSelect,
   addSample,
-  setSelectedFile,
-  clearFile,
-  newFile,
-  deleteFile,
-  renameFile,
+  fileRename,
+  fileClear,
+  fileDelete,
+  fileContent,
 };

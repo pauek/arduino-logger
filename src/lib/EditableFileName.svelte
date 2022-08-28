@@ -39,11 +39,10 @@
     }
   };
 
-  const saveName = () => {
-    db.renameFile(name, editName);
+  const saveName = async () => {
+    await db.fileRename(editName);
     isEditing = false;
     name = editName;
-    db.setSelectedFile(name);
   };
 </script>
 
