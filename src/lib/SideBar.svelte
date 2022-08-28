@@ -27,6 +27,12 @@
     <ConnectButton />
   </div>
   <div class="space" />
+  <div class="button-wrapper">
+    {#if !active}
+      <Button icon="add" title="New" on:click={db.newFile} />
+    {/if}
+  </div>
+  <div class="small-space" />
   {#each itemList as item}
     <div
       class="file"
@@ -45,12 +51,7 @@
       {/if}
     </div>
   {/each}
-  <div class="space" />
-  <div class="button-wrapper">
-    {#if !active}
-      <Button icon="add" title="New" on:click={db.newFile} />
-    {/if}
-  </div>
+
   <div class="flex-space" />
   <footer>Made by <a href="https://twitter.com/pauek">@pauek</a></footer>
 </div>
@@ -62,10 +63,13 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    --left-padding: .8rem;
+    --left-padding: 0.8rem;
   }
   .space {
-    height: 1.2rem;
+    height: .6rem;
+  }
+  .small-space {
+    height: .6rem;
   }
   .file {
     display: flex;
@@ -100,8 +104,8 @@
   }
   @keyframes pulse {
     from {
-      opacity: .5;
-      transform: scale(.5);
+      opacity: 0.5;
+      transform: scale(0.5);
     }
     to {
       opacity: 1;
